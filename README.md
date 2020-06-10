@@ -30,4 +30,4 @@ high.
 ```
 The above HTML gets converted, with a single line of javascript, to this:
 
-[](https://github.com/english-bridge-union/bridge-diagram/raw/diagram.PNG "Bridge Article")
+[](https://github.com/english-bridge-union/bridge-diagram/raw/master/diagram.PNG "Bridge Article")
