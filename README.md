@@ -38,6 +38,19 @@ Formatting bridge diagrams and auctions for the web can be quite fiddly, so this
 
 It's fairly easy to extend if you want to customise this for your own purposes. You'll want to know Javascript to deal with the parser, CSS to deal with the formatting and SVG to deal with the vulnerability/dealer graphic.
 
+## Installation
+
+You only need parser.js and diagram.css from this repository. Add them to your HTML header, place the text to be converted into a convenient `<div>` and then run the parser.parse function on the text. For example:
+
+```
+<script>
+  var x = document.getElementById('diagram');
+  x.innerHTML = parser.parse(x.innerHTML);
+</script>
+```
+
+The test.html file might be a useful starting point if this isn't clear.
+
 ## Syntax
 
 ### Suit Symbols
@@ -93,3 +106,21 @@ White space is ignored, so you could equally write this:
 After that, simply enter the auction in the order that it happens. `p` or `-` means PASS, `x` means DOUBLE and `r` means REDOUBLE. A `/` means ALL PASS. No-Trumps are `n`, not 'nt'.
 
 Finally, a `}` terminates the bidding diagram.
+
+## Extending it
+
+### If you don't like the language
+
+Perhaps you don't want to start a bidding diagram with `{d`, or you want to add support for highlighting the opening lead. You'll need to edit the parser grammar to do this. The parser was built using PEG.js, and the simplest way to generate your own is to use [the tool on their website](https://pegjs.org/online). Take the contents of the grammar.txt file and copy that into the tool. You can then edit it, test it and compile a new version from there.
+
+### If you don't like the layout
+
+If you want a fixed-width font, or a border around the bidding diagram, you'll need to edit the CSS file. It was generated with Sass, which is much easier to edit, so we've made that file available too.
+
+### If you don't like the compass image
+
+The compass image is an SVG graphic, and to change it you'll need to edit the grammar (see above). All the code for the compass is contained in the drawCompass function, so that should be all you have to edit.
+
+## Compatibility
+
+This uses CSS Grid, so probably won't work on Internet Explorer.
