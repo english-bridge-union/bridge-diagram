@@ -1,0 +1,170 @@
+{
+  function makeSuit(s) {
+    if (s.toLowerCase() === 's') {
+      return '<span class="black suit">♠</span>';
+    }
+    if (s.toLowerCase() === 'h') {
+      return '<span class="red suit">♥</span>';
+    }
+    if (s.toLowerCase() === 'd') {
+      return '<span class="red suit">♦</span>';
+    }
+    if (s.toLowerCase() === 'c') {
+      return '<span class="black suit">♣</span>';
+    }
+    if (s.toLowerCase() === 'n') {
+      return 'NT';
+    }
+  }
+  
+  function makeCall(x) {
+    return '<div class="call">' + (x && x !== '.' ? x : '') + '</div>';
+  }
+  
+  function drawInfo(dealer, vuln) {
+    var d = {'n': 'North', 's': 'South', 'e': 'East', 'w': 'West'},
+        v = {'ns': 'North/South', 'ew': 'East/West', 'both': 'Both', 'b': 'Both',
+             'none': 'None', '-': 'None', '0': 'None'};
+      
+    return (dealer && d[dealer.toLowerCase()] ? 'Dealer ' + d[dealer.toLowerCase()] + '<br/>' : '') +
+      (vuln && v[vuln.toLowerCase()] ? v[vuln.toLowerCase()] + ' Vuln' : '');  
+  }
+  
+  function drawCompass(dealer, vuln) {
+    var v = "rgb(230,57,57)", nv = "rgb(17,197,17)", cx = "50", cy = "50";
+
+    if (vuln === null) {
+      vuln = 'none';
+    }
+    vuln = vuln.toLowerCase();
+    if (vuln === 'b') {
+      vuln = 'both';
+    }
+    
+    if (dealer === null) {
+      dealer = false;
+    }
+    else if (dealer.toLowerCase() === 'n') {
+      cy = "20";
+    }
+    else if  (dealer.toLowerCase() === 's') {
+      cy = "80";
+    }
+    else if  (dealer.toLowerCase() === 'w') {
+      cx = "20";
+    }
+    else if  (dealer.toLowerCase() === 'e') {
+      cx = "80";
+    }
+    else {
+      dealer = false;
+    }
+
+    return '<svg width="100" height="100">' +
+'  <polygon points="1,1 99,1 50,50" style="fill:' +
+    (vuln == 'both' || vuln == 'ns' ? v : nv) + '; stroke:black; stroke-width: 2;"/>' +
+'  <polygon points="1,99 99,99 50,50" style="fill:' +
+    (vuln == 'both' || vuln == 'ns' ? v : nv) + '; stroke:black; stroke-width: 2;"/>' +
+'  <polygon points="1,1 1,99 50,50" style="fill:' +
+    (vuln == 'both' || vuln == 'ew' ? v : nv) + '; stroke:black; stroke-width: 2;"/>' +
+'  <polygon points="99,1 99,99 50,50" style="fill:' +
+    (vuln == 'both' || vuln == 'ew' ? v : nv) + '; stroke:black; stroke-width: 2;"/>' +
+(dealer ? '<circle r="15%" cx="' + cx + '%" cy="' + cy + '%" fill="white" stroke="black"/>' : '') +
+
+  '<text x="50%" y="20%" text-anchor="middle" dominant-baseline="central" font-size="120%" font-weight="bold">N</text>' +
+  '<text x="50%" y="80%" text-anchor="middle" dominant-baseline="central" font-size="120%" font-weight="bold">S</text>' +
+  '<text x="80%" y="50%" text-anchor="middle" dominant-baseline="central" font-size="120%" font-weight="bold">E</text>' +
+  '<text x="20%" y="50%" text-anchor="middle" dominant-baseline="central" font-size="120%" font-weight="bold">W</text>' +
+'</svg>';
+  }
+
+}
+
+Article
+ = x:Item* { return '<div class="ebu-bridge-diagram">\n' + x.join('') + '</div>';}
+
+Item = Bidding / Diagram / TextItem
+
+Diagram
+ = "{d" 
+   dealer:[nesw-]i?
+   vuln:("ns"i / "ew"i / "both"i / "none"i / "b"i / "-" / "0")?
+   _ n:Hand _ ";" _ e:Hand _ ";" _ s:Hand _ ";" _ w:Hand _ ";"? _ "}" {
+  return '<div class="diagram">\n' +
+         '<div class="north">' + n + '</div>\n' +
+         '<div class="east">' + e + '</div>\n' +
+         '<div class="south">' + s + '</div>\n' +
+         '<div class="west">' + w + '</div>\n' +
+         '<div class="compass">' +
+           drawCompass(dealer, vuln) +
+         '</div>\n' +
+         '<div class="info">' + drawInfo(dealer, vuln) + '</div>' +
+         '</div>'
+}
+ 
+Hand = s:Cards _ h:Cards _ d:Cards _ c:Cards {
+  return '<div class="suit">' + makeSuit('s') + s.join(' ') + '</div>' +
+         '<div class="suit">' + makeSuit('h') + h.join(' ') + '</div>' +
+         '<div class="suit">' + makeSuit('d') + d.join(' ') + '</div>' +
+         '<div class="suit">' + makeSuit('c') + c.join(' ') + '</div>';         
+        
+}
+
+Cards = Card+ / v:"-" {
+  if (v) {
+    return ["—"];
+  }
+}
+
+Card = c:([akqjt98765432]i / "10") {
+  c = c.toUpperCase();
+  if (c === 'T') {
+    c = '10';
+  }
+  return c;
+}
+
+Bidding
+ = "{b" _ first:FirstRow others:Row* _ "}" {
+  return '<div class="bidding">' +
+    '<div class="header">West</div>' +
+    '<div class="header">North</div>' +
+    '<div class="header">East</div>' +
+    '<div class="header">South</div>\n' +
+    first + '\n' + others.join('\n') + '</div>'; 
+}
+
+FirstRow = _ a:("." / Call) _ b:("." / Call)? _ c:("." / Call)? _ d:Call? _ {
+  return makeCall(a) + makeCall(b) + makeCall(c) + makeCall(d);
+}
+
+Row = _ a:Call _ b:Call? _ c:Call? _ d:Call? _ {
+  return makeCall(a) + makeCall(b) + makeCall(c) + makeCall(d);
+}
+
+Call
+ = Bid / call:[xrp/-]i {
+ if (call==="-") call="p";
+ if (call==="/") return "All Pass";
+ if (call==="r" || call==="R") return "XX";
+ return call.toUpperCase();
+}
+ 
+Bid
+ = level:[1-7] suit:[cdhsn] {return level + makeSuit(suit);}
+
+
+TextItem
+ = Symbol / Text
+
+Text
+ = [^{}]
+
+Symbol
+ = "!" suit:[cdhs]i { return makeSuit(suit);}
+
+
+
+
+_ "whitespace"
+  = [ \t\n\r]* {return "";}

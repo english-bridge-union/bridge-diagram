@@ -1,0 +1,87 @@
+div.ebu-bridge-diagram {
+  font-family: arial;
+
+  div.diagram {
+    display: grid;
+    font-size: 120%;
+    margin: 5px 0px 20px 20px;
+
+    grid-template-columns: max-content max-content max-content;
+    grid-template-areas: "info north x1" "west compass east" "x2 south x3";
+
+    div {
+      padding: 2px 5px;
+    }
+
+    div.north {
+      grid-area: north;
+    }
+
+    div.south {
+      grid-area: south;
+    }
+
+    div.west {
+      grid-area: west;
+      padding-right: 15px;
+    }
+
+    div.east {
+      grid-area: east;
+      padding-left: 15px;
+    }
+
+    div.compass {
+      grid-area: compass;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    div.info {
+      grid-area: info;
+      text-align: center;
+      display: flex;
+      font-size: 90%;
+      align-items: center;
+      justify-content: center;
+    }
+
+    span.suit {
+      width: 18px;
+    }
+
+  }
+
+  span.suit {
+    font-size: 120%;
+    display: inline-block;
+  }
+
+  span.red {
+    color: #f00;
+  }
+ 
+  div.bidding {
+    display: grid;
+    max-width: 500px;
+    font-size: 120%;
+
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+
+    margin: 5px 0px 20px 20px;
+    
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    div.header {
+      border-bottom: 1px solid black;
+    }
+    
+  }
+
+}
