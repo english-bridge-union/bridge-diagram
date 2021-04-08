@@ -107,6 +107,8 @@ After that, simply enter the auction in the order that it happens. `p` or `-` me
 
 Finally, a `}` terminates the bidding diagram.
 
+Occasionally, we might want to do custom bids or annotations to bids. We can put a custom bid in quotes `"` or `'`. Then anything we put inside here will go in a table cell in the bidding diagram. For example `"??"` would show as a bid of ??. If we want to annotate bids then we can escape with `\` within the quotes. For example `"\2c*"` would be a bid of 2 clubs with an asterisk. And `"\x<sup>2</sup>"` would be DBL<sup>2</sup>.
+
 ## Extending it
 
 ### If you don't like the language
