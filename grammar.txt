@@ -143,7 +143,7 @@ Row = _ a:Call _ b:Call? _ c:Call? _ d:Call? _ {
 }
 
 Call
- = Bid / call:[xrp/-]i {
+ = Bid / CustomBid / call:[xrp/-]i {
  if (call==="-") call="p";
  if (call==="/") return "All Pass";
  if (call==="r" || call==="R") return "XX";
@@ -163,8 +163,31 @@ Text
 Symbol
  = "!" suit:[cdhs]i { return makeSuit(suit);}
 
+CustomBid
+= '"' chars:DoubleStringCharacter* '"' { return chars.join(''); }
+/ "'" chars:SingleStringCharacter* "'" { return chars.join(''); }
 
+DoubleStringCharacter
+  = !('"' / "\\") char:. { return char; }
+  / "\\" sequence:EscapeSequence { return sequence; }
 
+SingleStringCharacter
+  = !("'" / "\\") char:. { return char; }
+  / "\\" sequence:EscapeSequence { return sequence; }
+
+EscapeSequence
+  = "'"
+  / '"'
+  / "\\"
+  / "b"  { return "\b";   }
+  / "f"  { return "\f";   }
+  / "n"  { return "\n";   }
+  / "t"  { return "\t";   }
+  / "v"  { return "\x0B"; }
+  / Call
+  
+  
+  
 
 _ "whitespace"
   = [ \t\n\r]* {return "";}
